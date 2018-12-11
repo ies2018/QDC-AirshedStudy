@@ -19,15 +19,15 @@ import pandas as pd
 
 year = ['2016','2017']
 year_sel = year[1]
-dir_list = ['Dust2016','Dust2017']
-pollutant = 'dust'
-units = 'g/$m^{2}$' 
-analyte_name = 'M2TMNXAER_5_12_4_DUCMASS' #analyte variable
+dir_list = ['NO2-2016','NO2-2017']
+pollutant = 'no2'
+units = '1/$cm^{2}$' 
+analyte_name = 'OMNO2d_003_ColumnAmountNO2TropCloudScreened' #analyte variable
 a_t = []
 
-for pol_year in range(len(dir_list)):
+for pol_year in range(len(year)):
     active_year = year[pol_year]
-    current_dir = 'C:\TARS\AAAActive\Qatar Airshed Study Jul 2017\Giovanni\Dust' + active_year
+    current_dir = 'C:\\TARS\\AAAActive\\Qatar Airshed Study Jul 2017\\Giovanni\\NO2-' + active_year
     
     print(current_dir)
     
@@ -42,8 +42,8 @@ for pol_year in range(len(dir_list)):
     #get initial data to calculate matrix dimenstions
     dataset = Dataset(file_name)
     d_lat = np.asmatrix(dataset.variables['lat'][:])  #list of latitude coordinates
-    d_lon = np.asmatrix(dataset.variables['lon'][:])  #lust of longitude coordinates
-    analyte_values = np.asmatrix(dataset.variables[analyte_name][:])*1000 #analyte values in matrix
+    d_lon = np.asmatrix(dataset.variables['lon'][:])  #list of longitude coordinates
+    analyte_values = np.asmatrix(dataset.variables[analyte_name][:]) #analyte values in matrix
     
     n,p = np.shape(analyte_values)
     
@@ -82,14 +82,12 @@ sns.heatmap(a_mean, annot= False,  linewidths=.1,
             cmap="YlGnBu",
             cbar_kws={'label': units},
             ax = ax)
-ax.set_title('Average Dust '+year_sel)
+ax.set_title('Average NO$_{2}$ '+year_sel)
 
 plt.show()
 
 #make an x range of months
 df=pd.DataFrame({'x': pd.DatetimeIndex(start='2016', freq='M', periods=qt).map(lambda x: str(x.year) +'-'+ str(x.month))})
-
-#af=df['x'].map(lambda x: str(x.year) +'-'+ str(x.month))
 
 for i in range(nt):
     for j in range(pt):
@@ -100,15 +98,17 @@ for i in range(nt):
 for column in df.drop('x', axis=1):
     plt.plot(df['x'], df[column], marker='', linewidth=1, alpha=0.9, label=column)
 
-
-os.chdir("C:\TARS\AAAActive\Qatar Airshed Study Jul 2017\Giovanni\Images")
+# change directory to store images
+os.chdir("C:\\TARS\\AAAActive\Qatar Airshed Study Jul 2017\\Giovanni\\Images")
 #plt.savefig('AveDust'+year_sel+'.png', dpi=300)
+#plt.legend(loc=2,ncol=4)
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.3),
           fancybox=True, shadow=True, ncol=5)
+#plt.legend()
 plt.xlabel("Month")
 #labels = df['x']
 plt.xticks(rotation=90)
-plt.ylabel("$g/m^{2}$")
+plt.ylabel(units)
 
-plt.savefig('TS_Dust2016-2017.png', dpi=300)
+plt.savefig('TS_NO2_2016-2017.png', dpi=300)
 plt.show()
